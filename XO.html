@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Cờ Caro Hoàn Chỉnh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            transition: background-color 0.5s;
+        }
+        
+        /* Giao diện ô chơi game basic */
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #333; /* Dark gray color for X and O */
+            border-right: 3px solid #555;
+            border-bottom: 3px solid #555;
+        }
+        /* Remove borders from the last column and last row to form a grid */
+        .cell:nth-child(3n) {
+            border-right: none;
+        }
+        .cell:nth-child(n+7) {
+            border-bottom: none;
+        }
+
+        .winning-cell { 
+            background-color: #d1fae5; /* A light, simple green for winning cells */
+        }
+
+        #confetti-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; overflow: hidden; z-index: 9999;
+        }
+        .confetti {
+            position: absolute; width: 10px; height: 10px;
+            background-color: #f00; opacity: 0.7;
+            animation: fall linear forwards;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+        }
+
+        @media (max-width: 640px) {
+            .cell { width: 80px; height: 80px; font-size: 2.5rem; }
+            .timer-display, .score-display { font-size: 0.875rem; }
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div id="confetti-container"></div>
+
+    <!-- Game Mode Selection Menu -->
+    <div id="game-menu" class="bg-white p-8 rounded-xl shadow-lg text-center w-11/12 max-w-md">
+        <h1 class="text-3xl font-bold mb-6 text-gray-800">Chọn Chế Độ Chơi</h1>
+        <button id="vs-ai-btn" class="w-full mb-4 px-6 py-3 bg-blue-500 text-white font-bold rounded-lg shadow-md hover:bg-blue-600 transition-transform transform hover:scale-105">Chơi với Máy</button>
+        <button id="vs-player-btn" class="w-full px-6 py-3 bg-green-500 text-white font-bold rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105">2 Người Chơi</button>
+    </div>
+
+    <!-- Player Name Entry -->
+    <div id="name-entry" class="hidden bg-white p-8 rounded-xl shadow-lg text-center w-11/12 max-w-md">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Nhập Tên Người Chơi</h2>
+        <div class="mb-4 text-left">
+            <label for="player1-name" class="block text-gray-700 mb-1">Người chơi 1 (X):</label>
+            <input type="text" id="player1-name" class="w-full p-2 border rounded shadow-sm focus:ring-2 focus:ring-blue-400" value="Người chơi 1">
+        </div>
+        <div class="mb-6 text-left">
+            <label for="player2-name" class="block text-gray-700 mb-1">Người chơi 2 (O):</label>
+            <input type="text" id="player2-name" class="w-full p-2 border rounded shadow-sm focus:ring-2 focus:ring-red-400" value="Người chơi 2">
+        </div>
+        <button id="start-pvp-btn" class="w-full px-6 py-3 bg-blue-500 text-white font-bold rounded-lg shadow-md hover:bg-blue-600">Bắt đầu</button>
+    </div>
+
+    <!-- Main Game Container -->
+    <main id="game-container" class="hidden bg-white p-6 md:p-8 rounded-xl shadow-lg text-center relative w-11/12 max-w-lg">
+        <div id="score-display" class="hidden flex justify-between w-full max-w-xs mx-auto mb-2 text-lg font-bold text-gray-700">
+            <span id="player1-score"></span>
+            <span id="player2-score"></span>
+        </div>
+        
+        <div id="timers" class="flex justify-between w-full max-w-xs mx-auto my-4 text-gray-700">
+            <div class="timer-display"><span id="playerXName">Bạn (X)</span>: <span id="playerXTime" class="font-bold">30</span>s</div>
+            <div class="timer-display"><span id="playerOName">Máy (O)</span>: <span id="playerOTime" class="font-bold">30</span>s</div>
+        </div>
+
+        <div id="status" class="text-lg md:text-xl text-gray-600 mb-6 h-8">Lượt của bạn (X)</div>
+        
+        <!-- Game Board with basic styling -->
+        <div id="board" class="grid grid-cols-3 mx-auto" style="width: fit-content; border: 3px solid #555;"></div>
+
+        <button id="play-again-btn" class="mt-8 px-8 py-3 bg-blue-500 text-white font-bold rounded-lg shadow-md hover:bg-blue-600 transition-transform transform hover:scale-105">Chơi Ván Mới</button>
+        <button id="back-to-menu-btn" class="mt-4 px-6 py-2 bg-gray-500 text-white font-bold rounded-lg shadow-sm hover:bg-gray-600">Quay lại Menu</button>
+    </main>
+
+    <script>
+        // DOM Elements
+        const gameMenu = document.getElementById('game-menu');
+        const vsAiBtn = document.getElementById('vs-ai-btn');
+        const vsPlayerBtn = document.getElementById('vs-player-btn');
+        const nameEntry = document.getElementById('name-entry');
+        const player1NameInput = document.getElementById('player1-name');
+        const player2NameInput = document.getElementById('player2-name');
+        const startPvpBtn = document.getElementById('start-pvp-btn');
+        const gameContainer = document.getElementById('game-container');
+        const scoreDisplay = document.getElementById('score-display');
+        const player1ScoreDisplay = document.getElementById('player1-score');
+        const player2ScoreDisplay = document.getElementById('player2-score');
+        const statusDisplay = document.getElementById('status');
+        const board = document.getElementById('board');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const backToMenuBtn = document.getElementById('back-to-menu-btn');
+        const playerXTimeDisplay = document.getElementById('playerXTime');
+        const playerOTimeDisplay = document.getElementById('playerOTime');
+        const playerXNameDisplay = document.getElementById('playerXName');
+        const playerONameDisplay = document.getElementById('playerOName');
+        const confettiContainer = document.getElementById('confetti-container');
+        
+        // Game State
+        let gameMode = null; // 'ai' or 'pvp'
+        let playerNames = { X: 'Bạn', O: 'Máy' };
+        let scores = { X: 0, O: 0 };
+        let gameActive = true;
+        let currentPlayer = 'X';
+        let gameState = Array(9).fill("");
+        let playerXTime = 30;
+        let playerOTime = 30;
+        let timerInterval = null;
+
+        const winningConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6],
+            [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]
+        ];
+
+        // --- UI & Screen Management ---
+        function showScreen(screen) {
+            gameMenu.classList.add('hidden');
+            nameEntry.classList.add('hidden');
+            gameContainer.classList.add('hidden');
+            screen.classList.remove('hidden');
+        }
+
+        vsAiBtn.addEventListener('click', () => {
+            gameMode = 'ai';
+            playerNames = { X: 'Bạn', O: 'Máy' };
+            scoreDisplay.classList.add('hidden');
+            initializeGame();
+        });
+
+        vsPlayerBtn.addEventListener('click', () => showScreen(nameEntry));
+
+        startPvpBtn.addEventListener('click', () => {
+            gameMode = 'pvp';
+            playerNames = {
+                X: player1NameInput.value || 'Người chơi 1',
+                O: player2NameInput.value || 'Người chơi 2'
+            };
+            scores = { X: 0, O: 0 };
+            updateScoreDisplay();
+            scoreDisplay.classList.remove('hidden');
+            initializeGame();
+        });
+
+        backToMenuBtn.addEventListener('click', () => {
+            showScreen(gameMenu);
+            clearInterval(timerInterval);
+        });
+        
+        function initializeGame() {
+            updateNamesDisplay();
+            showScreen(gameContainer);
+            handlePlayAgain();
+        }
+
+        function updateNamesDisplay() {
+            playerXNameDisplay.textContent = `${playerNames.X} (X)`;
+            playerONameDisplay.textContent = `${playerNames.O} (O)`;
+        }
+
+        function updateScoreDisplay() {
+            if (gameMode !== 'pvp') return;
+            player1ScoreDisplay.textContent = `${playerNames.X}: ${scores.X}`;
+            player2ScoreDisplay.textContent = `${playerNames.O}: ${scores.O}`;
+        }
+        
+        function showWinningEffect() {
+            confettiContainer.innerHTML = ''; 
+            const colors = ['#fde047', '#3b82f6', '#ef4444', '#10b981', '#f97316'];
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                const size = Math.random() * 5 + 5;
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.animationDuration = `${Math.random() * 3 + 3}s`;
+                confetti.style.animationDelay = `${Math.random() * 2}s`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confettiContainer.appendChild(confetti);
+            }
+        }
+
+        // --- Game Logic ---
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (!gameActive) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+                if (currentPlayer === 'X') {
+                    playerXTime--;
+                    playerXTimeDisplay.textContent = playerXTime;
+                    if (playerXTime <= 0) {
+                        endGameByTimeout('O');
+                    }
+                } else {
+                    playerOTime--;
+                    playerOTimeDisplay.textContent = playerOTime;
+                    if (playerOTime <= 0) {
+                       endGameByTimeout('X');
+                    }
+                }
+            }, 1000);
+        }
+
+        function endGameByTimeout(winner) {
+            clearInterval(timerInterval);
+            gameActive = false;
+            statusDisplay.textContent = `Hết giờ! ${playerNames[winner]} thắng!`;
+            if (gameMode === 'pvp') {
+                scores[winner]++;
+                updateScoreDisplay();
+            }
+        }
+
+        function handlePlayerChange() {
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            const currentName = playerNames[currentPlayer];
+
+            if (gameMode === 'ai' && currentPlayer === 'O' && gameActive) {
+                statusDisplay.innerHTML = "Máy đang suy nghĩ...";
+                board.style.pointerEvents = 'none';
+                setTimeout(makeAIMove, 800);
+            } else {
+                statusDisplay.innerHTML = `Lượt của ${currentName} (${currentPlayer})`;
+            }
+        }
+
+        function handleResultValidation() {
+            let roundWon = false;
+            let winningCombo = [];
+            for (const winCondition of winningConditions) {
+                let a = gameState[winCondition[0]], b = gameState[winCondition[1]], c = gameState[winCondition[2]];
+                if (a === '' || b === '' || c === '') continue;
+                if (a === b && b === c) {
+                    roundWon = true; winningCombo = winCondition; break;
+                }
+            }
+
+            if (roundWon) {
+                gameActive = false;
+                clearInterval(timerInterval);
+                statusDisplay.innerHTML = `${playerNames[currentPlayer]} đã thắng!`;
+                if (gameMode === 'pvp') {
+                    scores[currentPlayer]++;
+                    updateScoreDisplay();
+                }
+                winningCombo.forEach(index => document.querySelector(`[data-cell-index='${index}']`).classList.add('winning-cell'));
+                showWinningEffect();
+                return;
+            }
+
+            if (!gameState.includes("")) {
+                gameActive = false;
+                clearInterval(timerInterval);
+                statusDisplay.innerHTML = `Hòa!`;
+                return;
+            }
+
+            handlePlayerChange();
+        }
+        
+        function handleCellClick(e) {
+            const clickedCell = e.target;
+            const clickedCellIndex = parseInt(clickedCell.getAttribute('data-cell-index'));
+            if (gameState[clickedCellIndex] !== "" || !gameActive || (gameMode === 'ai' && currentPlayer === 'O')) return;
+            
+            gameState[clickedCellIndex] = currentPlayer;
+            clickedCell.innerHTML = currentPlayer;
+            // Add .x or .o class for potential future specific styling, though not used in basic view
+            clickedCell.classList.add(currentPlayer.toLowerCase());
+            
+            handleResultValidation();
+        }
+
+        function handlePlayAgain() {
+            gameActive = true;
+            currentPlayer = "X";
+            gameState.fill("");
+            playerXTime = 30;
+            playerOTime = 30;
+            playerXTimeDisplay.textContent = playerXTime;
+            playerOTimeDisplay.textContent = playerOTime;
+            statusDisplay.innerHTML = `Lượt của ${playerNames.X} (X)`;
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.innerHTML = "";
+                cell.classList.remove('x', 'o', 'winning-cell');
+            });
+            board.style.pointerEvents = 'auto';
+            confettiContainer.innerHTML = '';
+            startTimer();
+        }
+        
+        function makeAIMove() {
+            // Simple AI Logic: win, block, then random
+            let bestMove = -1;
+            const findWinningMove = (player) => {
+                for (const c of winningConditions) {
+                    const [a, b, cIdx] = c;
+                    if (gameState[a] === player && gameState[b] === player && gameState[cIdx] === '') return cIdx;
+                    if (gameState[a] === player && gameState[cIdx] === player && gameState[b] === '') return b;
+                    if (gameState[b] === player && gameState[cIdx] === player && gameState[a] === '') return a;
+                }
+                return -1;
+            };
+            
+            bestMove = findWinningMove('O'); // Win
+            if (bestMove === -1) bestMove = findWinningMove('X'); // Block
+            if (bestMove === -1 && gameState[4] === '') bestMove = 4; // Center
+            if (bestMove === -1) { // Random
+                const available = gameState.map((cell, index) => cell === '' ? index : null).filter(val => val !== null);
+                if(available.length > 0) bestMove = available[Math.floor(Math.random() * available.length)];
+            }
+            
+            if (bestMove !== -1) {
+                const cell = document.querySelector(`[data-cell-index='${bestMove}']`);
+                gameState[bestMove] = 'O';
+                cell.innerHTML = 'O';
+                cell.classList.add('o');
+                handleResultValidation();
+            }
+            board.style.pointerEvents = 'auto';
+        }
+
+        // --- Initialization ---
+        function createBoard() {
+            board.innerHTML = '';
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell'); // Simplified class for basic styling
+                cell.setAttribute('data-cell-index', i);
+                cell.addEventListener('click', handleCellClick);
+                board.appendChild(cell);
+            }
+        }
+        
+        playAgainBtn.addEventListener('click', handlePlayAgain);
+        createBoard();
+        showScreen(gameMenu);
+
+    </script>
+</body>
+</html>
+
+
