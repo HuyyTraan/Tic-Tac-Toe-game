@@ -1,14 +1,15 @@
 Game Cờ Caro Nâng Cao 🚀
 Chào mừng bạn đến với dự án Game Cờ Caro (Tic-Tac-Toe) được xây dựng bằng HTML, CSS và JavaScript thuần! Đây không chỉ là một game tic-tac-toe thông thường, mà là một trải nghiệm hoàn chỉnh với nhiều tính năng hấp dẫn để thách thức bạn bè và trí tuệ nhân tạo.
 
-Bạn có thể thay thế ảnh trên bằng ảnh chụp màn hình hoặc ảnh GIF quay lại gameplay thực tế.
+<img width="2428" height="1345" alt="image" src="https://github.com/user-attachments/assets/a256c557-29e3-450a-8ba7-8007a0ad5b46" />
+
 
 🎮 Chơi Ngay Tại Đây!
 Bạn có thể trải nghiệm game ngay lập tức qua đường link sau:
 
-Link Chơi Game Trực Tuyến
+Link Chơi Game Trực Tuyến: file:///C:/Users/Administrator/Downloads/XO.html
 
-(Lưu ý: Bạn cần thay thế TEN-CUA-BAN và TEN-REPOSITORY bằng tên người dùng và tên kho chứa GitHub của bạn sau khi đã kích hoạt GitHub Pages.)
+
 
 ✨ Tính Năng Nổi Bật
 👥 Chế độ 2 Người Chơi: Đặt tên tùy chỉnh và thách đấu bạn bè ngay trên cùng một máy. Tỉ số sẽ được theo dõi qua các ván đấu!
