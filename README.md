@@ -39,8 +39,8 @@ Cách đơn giản nhất là truy cập vào link chơi game trực tuyến ở
 
 Cách 2: Chơi trên máy tính cá nhân
 Clone kho chứa này về máy của bạn:
-
-git clone [https://github.com/TEN-CUA-BAN/TEN-REPOSITORY.git](https://github.com/TEN-CUA-BAN/TEN-REPOSITORY.git)
+https://github.com/HuyyTraan/Tic-Tac-Toe-game
+git clone : https://github.com/HuyyTraan/Tic-Tac-Toe-game
 
 Di chuyển vào thư mục dự án:
 
