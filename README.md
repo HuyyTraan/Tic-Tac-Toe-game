@@ -14,7 +14,7 @@ Link Chơi Game Trực Tuyến: https://huyytraan.github.io/Tic-Tac-Toe-game/
 ✨ Tính Năng Nổi Bật
 👥 Chế độ 2 Người Chơi: Đặt tên tùy chỉnh và thách đấu bạn bè ngay trên cùng một máy. Tỉ số sẽ được theo dõi qua các ván đấu!
 
-🤖 Đối Thủ AI Thông Minh: Luyện tập kỹ năng của bạn với một đối thủ máy được lập trình để chặn các nước đi và tìm kiếm chiến thắng. AI có thể học từ những thất bại và rút kinh nghiệm cho những ván sau
+🤖 Đối Thủ AI Thông Minh: Luyện tập kỹ năng của bạn với một đối thủ máy được lập trình để chặn các nước đi và tìm kiếm chiến thắng. AI có thể học từ những thất bại và rút kinh nghiệm cho những ván sau.
 
 ⏱️ Áp Lực Thời Gian: Mỗi người chơi chỉ có 30 giây cho một nước đi! Nhanh tay lên, nếu không bạn sẽ thua cuộc.
 
