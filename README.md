@@ -37,7 +37,7 @@ JavaScript (ES6): Xử lý toàn bộ logic của trò chơi, từ các nước 
 Cách 1: Chơi Online (Đề xuất)
 Cách đơn giản nhất là truy cập vào link chơi game trực tuyến ở trên.
 
-Cách 2: Chơi trên máy tính cá nhân
+Cách 2: Chơi trên máy tính cá nhân.
 Clone kho chứa này về máy của bạn:
 https://github.com/HuyyTraan/Tic-Tac-Toe-game
 git clone : https://github.com/HuyyTraan/Tic-Tac-Toe-game
