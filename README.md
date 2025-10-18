@@ -50,7 +50,7 @@ Mở file index.html bằng trình duyệt web yêu thích của bạn.
 
 Thưởng thức trò chơi!
 
-🌟 Hướng Phát Triển Tương Lai
+🌟 Hướng Phát Triển Tương Lai.
 Dự án vẫn còn nhiều tiềm năng để phát triển thêm:
 
 [ ] Nâng cấp AI với các cấp độ khó khác nhau (Dễ, Trung bình, Khó).
