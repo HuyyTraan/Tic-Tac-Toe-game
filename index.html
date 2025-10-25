@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,6 +49,18 @@
             0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
             100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
         }
+        /* Hiệu ứng chọc ghẹo khi thua máy */
+        .taunt-effect {
+            animation: tauntShake 0.5s ease-in-out 3; /* Rung 3 lần */
+            color: #ef4444; /* Chữ đỏ */
+        }
+        @keyframes tauntShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+
 
         @media (max-width: 640px) {
             .cell { width: 80px; height: 80px; font-size: 2.5rem; }
@@ -63,15 +73,13 @@
 
     <div id="confetti-container"></div>
 
-    <!-- Game Mode Selection Menu -->
-    <div id="game-menu" class="bg-white p-8 rounded-xl shadow-lg text-center w-11/12 max-w-md">
+    <!-- Game Mode Selection Menu --><div id="game-menu" class="bg-white p-8 rounded-xl shadow-lg text-center w-11/12 max-w-md">
         <h1 class="text-3xl font-bold mb-6 text-gray-800">Chọn Chế Độ Chơi</h1>
         <button id="vs-ai-btn" class="w-full mb-4 px-6 py-3 bg-blue-500 text-white font-bold rounded-lg shadow-md hover:bg-blue-600 transition-transform transform hover:scale-105">Chơi với Máy</button>
         <button id="vs-player-btn" class="w-full px-6 py-3 bg-green-500 text-white font-bold rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105">2 Người Chơi</button>
     </div>
 
-    <!-- Player Name Entry -->
-    <div id="name-entry" class="hidden bg-white p-8 rounded-xl shadow-lg text-center w-11/12 max-w-md">
+    <!-- Player Name Entry --><div id="name-entry" class="hidden bg-white p-8 rounded-xl shadow-lg text-center w-11/12 max-w-md">
         <h2 class="text-2xl font-bold mb-4 text-gray-800">Nhập Tên Người Chơi</h2>
         <div class="mb-4 text-left">
             <label for="player1-name" class="block text-gray-700 mb-1">Người chơi 1 (X):</label>
@@ -84,8 +92,7 @@
         <button id="start-pvp-btn" class="w-full px-6 py-3 bg-blue-500 text-white font-bold rounded-lg shadow-md hover:bg-blue-600">Bắt đầu</button>
     </div>
 
-    <!-- Main Game Container -->
-    <main id="game-container" class="hidden bg-white p-6 md:p-8 rounded-xl shadow-lg text-center relative w-11/12 max-w-lg">
+    <!-- Main Game Container --><main id="game-container" class="hidden bg-white p-6 md:p-8 rounded-xl shadow-lg text-center relative w-11/12 max-w-lg">
         <div id="score-display" class="hidden flex justify-between w-full max-w-xs mx-auto mb-2 text-lg font-bold text-gray-700">
             <span id="player1-score"></span>
             <span id="player2-score"></span>
@@ -98,8 +105,7 @@
 
         <div id="status" class="text-lg md:text-xl text-gray-600 mb-6 h-8">Lượt của bạn (X)</div>
         
-        <!-- Game Board with basic styling -->
-        <div id="board" class="grid grid-cols-3 mx-auto" style="width: fit-content; border: 3px solid #555;"></div>
+        <!-- Game Board with basic styling --><div id="board" class="grid grid-cols-3 mx-auto" style="width: fit-content; border: 3px solid #555;"></div>
 
         <button id="play-again-btn" class="mt-8 px-8 py-3 bg-blue-500 text-white font-bold rounded-lg shadow-md hover:bg-blue-600 transition-transform transform hover:scale-105">Chơi Ván Mới</button>
         <button id="back-to-menu-btn" class="mt-4 px-6 py-2 bg-gray-500 text-white font-bold rounded-lg shadow-sm hover:bg-gray-600">Quay lại Menu</button>
@@ -127,7 +133,7 @@
         const playerXNameDisplay = document.getElementById('playerXName');
         const playerONameDisplay = document.getElementById('playerOName');
         const confettiContainer = document.getElementById('confetti-container');
-        
+
         // Game State
         let gameMode = null; // 'ai' or 'pvp'
         let playerNames = { X: 'Bạn', O: 'Máy' };
@@ -225,13 +231,13 @@
                     playerXTime--;
                     playerXTimeDisplay.textContent = playerXTime;
                     if (playerXTime <= 0) {
-                        endGameByTimeout('O');
+                        endGameByTimeout('O'); // X hết giờ, O thắng
                     }
                 } else {
                     playerOTime--;
                     playerOTimeDisplay.textContent = playerOTime;
                     if (playerOTime <= 0) {
-                       endGameByTimeout('X');
+                       endGameByTimeout('X'); // O hết giờ, X thắng
                     }
                 }
             }, 1000);
@@ -240,7 +246,18 @@
         function endGameByTimeout(winner) {
             clearInterval(timerInterval);
             gameActive = false;
-            statusDisplay.textContent = `Hết giờ! ${playerNames[winner]} thắng!`;
+            
+            // Nếu người chơi thua máy hoặc hết giờ khi đang chơi AI
+            if (gameMode === 'ai' && winner === 'O') { // Máy thắng
+                statusDisplay.innerHTML = `Hết giờ! Máy thắng rồi đó! 😂`;
+                statusDisplay.classList.add('taunt-effect');
+            } else if (gameMode === 'ai' && winner === 'X') { // Người chơi thắng máy (do máy hết giờ)
+                statusDisplay.innerHTML = `Máy hết giờ! ${playerNames[winner]} thắng!`;
+                showWinningEffect(); // Vẫn hiển thị pháo hoa
+            } else { // Chế độ PvP
+                statusDisplay.textContent = `Hết giờ! ${playerNames[winner]} thắng!`;
+            }
+
             if (gameMode === 'pvp') {
                 scores[winner]++;
                 updateScoreDisplay();
@@ -274,20 +291,29 @@
             if (roundWon) {
                 gameActive = false;
                 clearInterval(timerInterval);
-                statusDisplay.innerHTML = `${playerNames[currentPlayer]} đã thắng!`;
+                
+                // Kiểm tra nếu là chế độ AI và máy thắng
+                if (gameMode === 'ai' && currentPlayer === 'O') {
+                    statusDisplay.innerHTML = `Lêu lêu 😂`;
+                    statusDisplay.classList.add('taunt-effect');
+                } else {
+                    statusDisplay.innerHTML = `${playerNames[currentPlayer]} đã thắng!`;
+                    showWinningEffect(); // Hiển thị pháo hoa cho người chơi hoặc PvP
+                }
+
                 if (gameMode === 'pvp') {
                     scores[currentPlayer]++;
                     updateScoreDisplay();
                 }
                 winningCombo.forEach(index => document.querySelector(`[data-cell-index='${index}']`).classList.add('winning-cell'));
-                showWinningEffect();
+                
                 return;
             }
 
             if (!gameState.includes("")) {
                 gameActive = false;
                 clearInterval(timerInterval);
-                statusDisplay.innerHTML = `Hòa!`;
+                statusDisplay.innerHTML = `Hòa!`; // Hòa không có hiệu ứng đặc biệt
                 return;
             }
 
@@ -301,7 +327,6 @@
             
             gameState[clickedCellIndex] = currentPlayer;
             clickedCell.innerHTML = currentPlayer;
-            // Add .x or .o class for potential future specific styling, though not used in basic view
             clickedCell.classList.add(currentPlayer.toLowerCase());
             
             handleResultValidation();
@@ -316,6 +341,7 @@
             playerXTimeDisplay.textContent = playerXTime;
             playerOTimeDisplay.textContent = playerOTime;
             statusDisplay.innerHTML = `Lượt của ${playerNames.X} (X)`;
+            statusDisplay.classList.remove('taunt-effect'); // Xóa hiệu ứng chọc ghẹo
             document.querySelectorAll('.cell').forEach(cell => {
                 cell.innerHTML = "";
                 cell.classList.remove('x', 'o', 'winning-cell');
@@ -375,5 +401,4 @@
     </script>
 </body>
 </html>
-
 
