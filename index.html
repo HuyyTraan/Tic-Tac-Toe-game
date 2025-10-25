@@ -8,6 +8,12 @@
         body {
             font-family: 'Quicksand', sans-serif;
             transition: background-color 0.5s;
+            /* Thêm background bàn cờ caro cho toàn trang */
+            background-color: #f3f4f6; /* Tương đương bg-gray-100 */
+            background-image: 
+                repeating-linear-gradient(rgba(200, 200, 200, 0.5) 0 2px, transparent 2px 100px),
+                repeating-linear-gradient(90deg, rgba(200, 200, 200, 0.5) 0 2px, transparent 2px 100px);
+            background-size: 100px 100px;
         }
         
         /* Giao diện ô chơi game basic */
@@ -69,7 +75,7 @@
         .hidden { display: none; }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="flex items-center justify-center min-h-screen">
 
     <div id="confetti-container"></div>
 
