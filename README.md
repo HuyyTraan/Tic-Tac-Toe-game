@@ -9,7 +9,7 @@ Bạn có thể trải nghiệm game ngay lập tức qua đường link sau:
    
 Link Chơi Game Trực Tuyến: https://huyytraan.github.io/Tic-Tac-Toe-game/   
   
-   
+    
 
 ✨ Tính Năng Nổi Bật
 👥 Chế độ 2 Người Chơi: Đặt tên tùy chỉnh và thách đấu bạn bè ngay trên cùng một máy. Tỉ số sẽ được theo dõi qua các ván đấu!
