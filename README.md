@@ -5,7 +5,7 @@ Chào mừng bạn đến với dự án Game Cờ Caro (Tic-Tac-Toe) được x
     
        
 🎮 Chơi Ngay Tại Đây!     
-Bạn có thể trải nghiệm game ngay lập tức qua đường link sau:         
+Bạn có thể trải nghiệm game ngay lập tức qua đường link sau:          
      
 Link Chơi Game Trực Tuyến: https://huyytraan.github.io/Tic-Tac-Toe-game/    
   
