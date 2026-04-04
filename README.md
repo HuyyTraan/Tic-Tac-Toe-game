@@ -31,7 +31,7 @@ HTML5: Cấu trúc nền tảng của trang web.
 
 Tailwind CSS: Framework CSS để xây dựng giao diện nhanh chóng và đẹp mắt.
 
-JavaScript (ES6): Xử lý toàn bộ logic của trò chơi, từ các nước đi, AI, bộ đếm thời gian cho đến hiệu ứng.
+JavaScript (ES6): Xử lý toàn bộ logic của trò chơi, từ các nước đi, AI, bộ đếm thời gian cho đến hiệu ứng. 
 
 🕹️ Cách Chơi
 Cách 1: Chơi Online (Đề xuất)
