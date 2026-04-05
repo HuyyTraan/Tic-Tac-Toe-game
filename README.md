@@ -24,7 +24,7 @@ Link Chơi Game Trực Tuyến: https://huyytraan.github.io/Tic-Tac-Toe-game/
 
 scoreboard Bảng Tỉ Số: Theo dõi điểm số giữa hai người chơi để xem ai là người xuất sắc hơn.
 
-💻 Công Nghệ Sử Dụng
+💻 Công Nghệ Sử Dụng 
 Dự án được xây dựng hoàn toàn từ các công nghệ web cơ bản, không cần framework phức tạp:
 
 HTML5: Cấu trúc nền tảng của trang web.
